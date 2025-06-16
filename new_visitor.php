@@ -53,11 +53,11 @@ if(isset($_POST['save']))
                 <h5 class="modal-title" style="float: left;">Register Visitor</h5>
               </div>
               <div class="col-md-12 mt-4">
-                <form class="forms-sample" method="post" enctype="multipart/form-data" class="form-horizontal">
+                <form class="forms-sample" method="post" autocomplete="off" enctype="multipart/form-data" class="form-horizontal">
                   <div class="row ">
                     <div class="form-group col-md-6 ">
                       <label for="exampleInputPassword1">Full Names</label>
-                      <input type="text" id="fullname" name="fullname" placeholder="Full Name" class="form-control" required="">
+                      <input type="text" id="fullname" name="fullname" placeholder="Full Name" autocomplete="off" class="form-control" required="">
                     </div>
                     <div class="form-group col-md-6">
                       <label for="exampleInputName1">Visitor Pass Number </label>

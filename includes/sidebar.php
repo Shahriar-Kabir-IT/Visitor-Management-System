@@ -1,4 +1,4 @@
- <nav class="sidebar sidebar-offcanvas" id="sidebar">
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
     <ul class="nav">
         <li class="nav-item">
             <a class="nav-link" href="dashboard.php">
@@ -30,7 +30,7 @@
         {  
             foreach($results as $row)
             { 
-                if($row->AdminName=="Admin"  )
+                if($row->AdminName=="Admin")
                 { 
                     ?>
                     <li class="nav-item">
@@ -40,13 +40,10 @@
                             <i class="mdi mdi-account-multiple menu-icon"></i>
                         </a>
                         <div class="collapse" id="general-pages">
-
                             <ul class="nav flex-column sub-menu">
                                 <li class="nav-item"> <a class="nav-link" href="userregister.php">Register user </a></li>
                                 <li class="nav-item"> <a class="nav-link" href="user_permission.php"> User permissions</a></li>
-
                             </ul>
-
                         </div>
                     </li>
                     <?php 
@@ -61,10 +58,21 @@
             </a>
             <div class="collapse" id="reports">
                 <ul class="nav flex-column sub-menu">
-                 <!--  -->
-                 <li class="nav-item"> <a class="nav-link" href="btndates_report_details.php">Visitor Report By Date</a></li>
-             </ul>
-         </div>
-     </li>
- </ul>
+                    <?php
+                    if($query->rowCount() > 0)
+                    {  
+                        foreach($results as $row)
+                        { 
+                            if($row->AdminName=="Admin")
+                            { 
+                                ?>
+                                <li class="nav-item"> <a class="nav-link" href="btndates_report_details.php">Visitor Report By Date</a></li>
+                                <?php 
+                            } 
+                        }
+                    } ?>
+                </ul>
+            </div>
+        </li>
+    </ul>
 </nav>
