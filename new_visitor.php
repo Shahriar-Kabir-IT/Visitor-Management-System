@@ -60,8 +60,8 @@ if(isset($_POST['save']))
                       <input type="text" id="fullname" name="fullname" placeholder="Full Name" class="form-control" required="">
                     </div>
                     <div class="form-group col-md-6">
-                      <label for="exampleInputName1">Visitor Email </label>
-                      <input type="email" id="email" name="email" placeholder="Enter Email" class="form-control" required="">
+                      <label for="exampleInputName1">Visitor Pass Number </label>
+                      <input type="text" id="email" name="email" placeholder="Enter Visitor Pass Number" class="form-control" required="">
                     </div>
                   </div>
                   <div class="row ">
@@ -86,8 +86,8 @@ if(isset($_POST['save']))
                   </div>
                   <div class="row ">
                     <div class="form-group col-md-6 offset-md-6 ">
-                      <label for="exampleInputPassword1">Address</label>
-                      <textarea name="address" id="address" rows="9" placeholder="Enter Visitor Address..." class="form-control" required=""></textarea>
+                      <label for="exampleInputPassword1">Company Name & Address</label>
+                      <textarea name="address" id="address" rows="9" placeholder="Enter Visitor Company Name & Address..." class="form-control" required=""></textarea>
                     </div>
 
                   </div>

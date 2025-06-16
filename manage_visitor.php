@@ -50,7 +50,7 @@ check_login();
                         <th class="text-center">No</th>
                         <th>Full Name</th>
                         <th>Contact Number</th>
-                        <th>Email</th>
+                        <th>Visitor Pass Number</th>
                         <th>Reg Date</th>
                         <th class=" Text-center" style="width: 15%;">Action</th>
                       </tr>
