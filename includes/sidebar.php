@@ -19,60 +19,45 @@
             </a>
         </li>
         <?php
-        $aid=$_SESSION['odmsaid'];
-        $sql="SELECT * from  tbladmin where ID=:aid";
-        $query = $dbh -> prepare($sql);
-        $query->bindParam(':aid',$aid,PDO::PARAM_STR);
+        $aid = $_SESSION['odmsaid'];
+        $sql = "SELECT AdminName FROM tbladmin WHERE ID = :aid";
+        $query = $dbh->prepare($sql);
+        $query->bindParam(':aid', $aid, PDO::PARAM_STR);
         $query->execute();
-        $results=$query->fetchAll(PDO::FETCH_OBJ);
-        $cnt=1;
-        if($query->rowCount() > 0)
-        {  
-            foreach($results as $row)
-            { 
-                if($row->AdminName=="Admin")
-                { 
-                    ?>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="collapse" href="#general-pages" aria-expanded="false" aria-controls="general-pages">
-                            <span class="menu-title">User management</span>
-                            <i class="menu-arrow"></i>
-                            <i class="mdi mdi-account-multiple menu-icon"></i>
-                        </a>
-                        <div class="collapse" id="general-pages">
-                            <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link" href="userregister.php">Register user </a></li>
-                                <li class="nav-item"> <a class="nav-link" href="user_permission.php"> User permissions</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <?php 
-                } 
-            }
-        } ?> 
-        <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="false" aria-controls="ui-basic">
-                <span class="menu-title">Reports</span>
-                <i class="menu-arrow"></i>
-                <i class="mdi mdi-database menu-icon"></i>
-            </a>
-            <div class="collapse" id="reports">
-                <ul class="nav flex-column sub-menu">
-                    <?php
-                    if($query->rowCount() > 0)
-                    {  
-                        foreach($results as $row)
-                        { 
-                            if($row->AdminName=="Admin")
-                            { 
-                                ?>
-                                <li class="nav-item"> <a class="nav-link" href="btndates_report_details.php">Visitor Report By Date</a></li>
-                                <?php 
-                            } 
-                        }
-                    } ?>
-                </ul>
-            </div>
-        </li>
+        $result = $query->fetch(PDO::FETCH_OBJ);
+
+        if ($result && $result->AdminName === "Admin") { 
+            // Show User Management (only for Admin)
+            ?>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#general-pages" aria-expanded="false" aria-controls="general-pages">
+                    <span class="menu-title">User management</span>
+                    <i class="menu-arrow"></i>
+                    <i class="mdi mdi-account-multiple menu-icon"></i>
+                </a>
+                <div class="collapse" id="general-pages">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"> <a class="nav-link" href="userregister.php">Register user</a></li>
+                        <li class="nav-item"> <a class="nav-link" href="user_permission.php">User permissions</a></li>
+                    </ul>
+                </div>
+            </li>
+
+            <!-- Reports Section (only for Admin) -->
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="false" aria-controls="reports">
+                    <span class="menu-title">Reports</span>
+                    <i class="menu-arrow"></i>
+                    <i class="mdi mdi-database menu-icon"></i>
+                </a>
+                <div class="collapse" id="reports">
+                    <ul class="nav flex-column sub-menu">
+                        <li class="nav-item"> <a class="nav-link" href="btndates_report_details.php">Visitor Report By Date</a></li>
+                    </ul>
+                </div>
+            </li>
+            <?php
+        }
+        ?>
     </ul>
 </nav>

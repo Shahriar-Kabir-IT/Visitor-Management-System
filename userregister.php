@@ -4,17 +4,15 @@ check_login();
 if(isset($_GET['delid']))
 {
     $rid=intval($_GET['delid']);
-    $sql="update tbladmin set Status='0' where ID='$rid'";
+    $sql="delete from tbladmin where ID=:rid";
     $query=$dbh->prepare($sql);
     $query->bindParam(':rid',$rid,PDO::PARAM_STR);
-    $query->execute();
     if ($query->execute()){
-        echo "<script>alert('User blocked');</script>"; 
+        echo "<script>alert('User deleted successfully');</script>"; 
         echo "<script>window.location.href = 'userregister.php'</script>";
     }else{
-        echo '<script>alert("update failed! try again later")</script>';
+        echo '<script>alert("Deletion failed! try again later")</script>';
     }
-    
 }
 ?>
 <!DOCTYPE html>
@@ -37,8 +35,6 @@ if(isset($_GET['delid']))
                             <div class="modal-header">
                                 <h5 class="modal-title" style="float: left;">Register user</h5>    
                                 <div class="card-tools" style="float: right;">
-                                    <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#delete" ></i> Blocked users
-                                    </button>
                                     <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#registeruser" ><i class="fas fa-plus" ></i> Register User
                                     </button>
                                 </div>      
@@ -56,25 +52,6 @@ if(isset($_GET['delid']))
                                         <div class="modal-body">
                                             <!-- <p>One fine body&hellip;</p> -->
                                             <?php @include("newuser_form.php");?>
-                                        </div>
-                                    </div>
-                                    <!-- /.modal-content -->
-                                </div>
-                                <!-- /.modal-dialog -->
-                            </div>
-                            <!-- /.modal -->
-                            <div class="modal fade" id="delete">
-                                <div class="modal-dialog modal-xl ">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Deleted user</h4>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <!-- <p>One fine body&hellip;</p> -->
-                                            <?php @include("deleted_users.php");?>
                                         </div>
                                     </div>
                                     <!-- /.modal-content -->
@@ -116,7 +93,7 @@ if(isset($_GET['delid']))
                                     </thead>
                                     <tbody>
                                         <?php
-                                        $sql="SELECT * from tbladmin where Status='1'";
+                                        $sql="SELECT * from tbladmin";
                                         $query = $dbh -> prepare($sql);
                                         $query->execute();
                                         $results=$query->fetchAll(PDO::FETCH_OBJ);
@@ -136,7 +113,7 @@ if(isset($_GET['delid']))
                                                     </td>
                                                     <td class=" text-center">
                                                         <a href="#"  class=" edit_data" id="<?php echo  ($row->ID); ?>" title="click for edit"><i class="mdi mdi-pencil-box-outline" aria-hidden="true"></i></a>
-                                                        <a href="userregister.php?delid=<?php echo ($row->ID);?>" onclick="return confirm('Do you really want to Delete ?');" title="Delete this User"><i class="mdi mdi-delete fa-delete"style="color: #f05050"  aria-hidden="true"></i></a> </td>
+                                                        <a href="userregister.php?delid=<?php echo ($row->ID);?>" onclick="return confirm('Are you sure you want to delete this user?');" title="Delete this User"><i class="mdi mdi-delete fa-delete"style="color: #f05050"  aria-hidden="true"></i></a> </td>
                                                     </tr>
                                                     <?php $cnt=$cnt+1;
                                                 }
