@@ -5,6 +5,12 @@ check_login();
 <!DOCTYPE html>
 <html lang="en">
 <?php @include("includes/head.php");?>
+<style>
+    /* Style to increase eye icon size */
+    .eye-icon {
+        font-size: 1.3rem; /* Increased from default size */
+    }
+</style>
 <body>
   <div class="container-scroller">
     <!-- partial:../../partials/_navbar.html -->
@@ -51,13 +57,14 @@ check_login();
                         <th>Full Name</th>
                         <th>Contact Number</th>
                         <th>Visitor Pass Number</th>
-                        <th>Reg Date</th>
-                        <th class=" Text-center" style="width: 15%;">Action</th>
+                        <th class="text-center">Reg Date</th>
+                        <th class="text-center">Entry Time</th>
+                        <th class="text-center" style="width: 15%;">Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php
-                      $sql="SELECT *from tblvisitor ORDER BY id DESC";
+                      $sql="SELECT * from tblvisitor ORDER BY id DESC";
                       $query = $dbh -> prepare($sql);
                       $query->execute();
                       $results=$query->fetchAll(PDO::FETCH_OBJ);
@@ -69,12 +76,15 @@ check_login();
                           ?>
                           <tr>
                             <td class="text-center"><?php echo htmlentities($cnt);?></td>
-                            <td class=""><?php  echo htmlentities($row->FullName);?></td>
-                            <td class="text-center">0<?php  echo htmlentities($row->MobileNumber);?></td>
-                            <td class="text-center"><?php  echo htmlentities($row->Email);?></td>
-                            <td class="text-center"><?php  echo htmlentities(date("d-m-Y", strtotime($row->EnterDate)));?></td>
-                            <td class=" text-center">
-                              <a href="#"  class=" edit_data5" id="<?php echo  ($row->ID); ?>" title="click to view">&nbsp;<i class="mdi mdi-eye" aria-hidden="true"></i></a>
+                            <td><?php echo htmlentities($row->FullName);?></td>
+                            <td class="text-center">0<?php echo htmlentities($row->MobileNumber);?></td>
+                            <td class="text-center"><?php echo htmlentities($row->Email);?></td>
+                            <td class="text-center"><?php echo htmlentities(date("d-m-Y", strtotime($row->EnterDate)));?></td>
+                            <td class="text-center"><?php echo htmlentities(date("H:i:s", strtotime($row->EnterDate))); ?></td>
+                            <td class="text-center">
+                              <a href="#" class="edit_data5" id="<?php echo ($row->ID); ?>" title="click to view">
+                                <i class="mdi mdi-eye eye-icon" aria-hidden="true"></i>
+                              </a>
                             </td>
                           </tr>
                           <?php 
@@ -116,6 +126,5 @@ check_login();
       });
     });
   </script>
-
 </body>
 </html>
