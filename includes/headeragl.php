@@ -1,7 +1,7 @@
  <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
   <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
     <a class="navbar-brand brand-logo" href="dashboard.php" style="font-size: 24px; font-weight: bold; color: black;">
-  ANANTA VMS H.O
+  ANANTA VMS AGL
 </a>
 <a class="navbar-brand brand-logo-mini" href="dashboard.php" style="font-size: 16px; font-weight: bold; color: black;">
   VMS
@@ -13,7 +13,7 @@
       <span class="mdi mdi-menu"></span>
     </button>
     <div class="search-field ">
-      <form class="d-flex align-items-center h-100" name="search" action="search_visitor.php" method="post">
+      <form class="d-flex align-items-center h-100" name="search" action="search_visitoragl.php" method="post">
   <div class="input-group" style="background-color: #f2edf3;">
     <input type="text" class="form-control bg-transparent border-0" name="searchdata" id="searchdata" placeholder="Search by Names" required>
     <div class="input-group-append">

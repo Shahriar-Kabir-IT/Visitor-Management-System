@@ -1,56 +1,69 @@
-
 <?php
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
+
 if(isset($_POST['login']))
 {
-    $username=$_POST['username'];
-    $password=md5($_POST['password']);
-    $sql ="SELECT * FROM tbladmin WHERE UserName=:username and Password=:password";
-    $query=$dbh->prepare($sql);
-    $query-> bindParam(':username', $username, PDO::PARAM_STR);
-    $query-> bindParam(':password', $password, PDO::PARAM_STR);
-    $query-> execute();
-    $results=$query->fetchAll(PDO::FETCH_OBJ);
+    $username = $_POST['username'];
+    $password = md5($_POST['password']);
+    $factory  = strtoupper(trim($_POST['factory'])); // Get selected factory
+
+    $sql = "SELECT * FROM tbladmin WHERE UserName = :username AND Password = :password AND Factory = :factory";
+    $query = $dbh->prepare($sql);
+    $query->bindParam(':username', $username, PDO::PARAM_STR);
+    $query->bindParam(':password', $password, PDO::PARAM_STR);
+    $query->bindParam(':factory', $factory, PDO::PARAM_STR);
+    $query->execute();
+    $results = $query->fetchAll(PDO::FETCH_OBJ);
+
     if($query->rowCount() > 0)
     {
         foreach ($results as $result) 
         {
-            $_SESSION['odmsaid']=$result->ID;
-            $_SESSION['login']=$result->username;
-            $_SESSION['names']=$result->FirstName;
-            $_SESSION['permission']=$result->AdminName;
-            $_SESSION['companyname']=$result->CompanyName;
-            $get=$result->Status;
-        }
-        $aa= $_SESSION['odmsaid'];
-        $sql="SELECT * from tbladmin  where ID=:aa";
-        $query = $dbh -> prepare($sql);
-        $query->bindParam(':aa',$aa,PDO::PARAM_STR);
-        $query->execute();
-        $results=$query->fetchAll(PDO::FETCH_OBJ);
-        $cnt=1;
-        if($query->rowCount() > 0)
-        {
-            foreach($results as $row)
-            {            
-                if($row->Status=="1")
-                { 
-                    echo "<script type='text/javascript'> document.location ='dashboard.php'; </script>";            
-                } else
-                { 
-                    echo "<script>
-                    alert('Your account was deactivated Approach Admin');document.location ='index.php';
-                    </script>";
+            if($result->Status == "1")
+            { 
+                $_SESSION['odmsaid']     = $result->ID;
+                $_SESSION['login']       = $result->UserName;
+                $_SESSION['names']       = $result->FirstName;
+                $_SESSION['permission']  = $result->AdminName;
+                $_SESSION['companyname'] = $result->CompanyName;
+                $_SESSION['factory']     = strtoupper($result->Factory);
+
+                // Redirect based on factory
+                switch ($_SESSION['factory']) {
+                    case 'ABM':
+                        echo "<script>document.location ='dashboard_abm.php';</script>";
+                        break;
+                    case 'AJL':
+                        echo "<script>document.location ='dashboard_ajl.php';</script>";
+                        break;
+                    case 'AGL':
+                        echo "<script>document.location ='dashboard_agl.php';</script>";
+                        break;
+                    case 'HEAD OFFICE':
+                        echo "<script>document.location ='dashboard.php';</script>";
+                        break;
+                    default:
+                        echo "<script>alert('Unknown factory.');document.location ='index.php';</script>";
+                        break;
                 }
             } 
+            else 
+            { 
+                echo "<script>
+                    alert('Your account was deactivated. Approach Admin.');
+                    document.location ='index.php';
+                </script>";
+            }
         } 
-    } else{
-        echo "<script>alert('Invalid Details');</script>";
+    } 
+    else {
+        echo "<script>alert('Invalid login details or factory mismatch.');</script>";
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <?php @include("includes/head.php");?>
@@ -65,38 +78,26 @@ if(isset($_POST['login']))
                                 <img class="img-avatar mb-3" src="companyimages/ananta.png" alt="">
                                 <h3>Ananta Companies Visitor Management System</h3>
                             </div>
-                            <form role="form" id=""  method="post" enctype="multipart/form-data" class="form-horizontal">  
+                            <form role="form" method="post" enctype="multipart/form-data" class="form-horizontal">  
                                 <div class="form-group mb-3">
-                                    <input type="text" class="form-control form-control-lg" name="username" id="exampleInputEmail1" placeholder="Username" required>
+                                    <input type="text" class="form-control form-control-lg" name="username" placeholder="Username" required>
                                 </div>
                                 <div class="form-group mt-3">
-                                    <input type="password" name="password" class="form-control form-control-lg" id="exampleInputPassword1" style="color: black" placeholder="Password" required>
+                                    <input type="password" name="password" class="form-control form-control-lg" placeholder="Password" required>
                                 </div>
-                                <div class="mt-3">
-                                    <button name="login" class="btn btn-block btn btn-info btn-lg font-weight-medium auth-form-btn">SIGN IN</button>
+                                <!-- ✅ Factory Dropdown including Head Office -->
+                                <div class="form-group mt-3">
+                                    <select class="form-control form-control-lg" name="factory" required>
+                                        <option value="">Select Factory</option>
+                                        <option value="Head Office">Head Office</option>
+                                        <option value="ABM">ABM</option>
+                                        <option value="AJL">AJL</option>
+                                        <option value="AGL">AGL</option>
+                                    </select>
+                                    <div class="mt-3">
+  <button name="login" class="btn btn-block btn btn-info btn-lg font-weight-medium auth-form-btn">
+    SIGN IN
+  </button>
+</div>
+
                                 </div>
-                                <!-- <div class="text-center mt-4 font-weight-light"> 
-                                    <a href="forgot_password.php" class="text-primary"> 
-                                        Forgot Password
-                                    </a>
-                                </div> -->
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- content-wrapper ends -->
-        </div>
-        <!-- page-body-wrapper ends -->
-    </div>
-    <!-- container-scroller -->
-    <?php @include("includes/foot.php");?>
-    <!-- endinject -->
-     <!-- Replaced local DataTables scripts with CDN versions -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">
-<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
-</body>
-</html>
