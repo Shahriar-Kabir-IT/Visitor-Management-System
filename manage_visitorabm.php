@@ -59,7 +59,7 @@ check_login();
                         <th>Visitor Pass Number</th>
                         <th class="text-center">Reg Date</th>
                         <th class="text-center">Entry Time</th>
-                        <th class="text-center" style="width: 15%;">Action</th>
+                        <th class="text-center" style="width: 15%;">View Details</th>
                       </tr>
                     </thead>
                     <tbody>

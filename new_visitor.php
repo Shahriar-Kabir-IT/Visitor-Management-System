@@ -91,7 +91,7 @@ if(isset($_POST['save']))
                     </div>
 
                   </div>
-                  <button type="submit" style="float: left;" name="save" class="btn btn-info  mr-2 mb-4">Save</button>
+                  <button type="submit" style="float: left;" name="save" class="btn btn-info  mr-2 mb-4">Submit</button>
                 </form>
               </div>
             </div>
