@@ -40,6 +40,9 @@ if(isset($_POST['login']))
                     case 'AJL':
                         echo "<script>document.location ='dashboard_ajl.php';</script>";
                         break;
+                        case 'PWPL':
+                        echo "<script>document.location ='dashboard_pwpl.php';</script>";
+                        break;
                     case 'AGL':
                         echo "<script>document.location ='dashboard_agl.php';</script>";
                         break;
@@ -90,6 +93,7 @@ if(isset($_POST['login']))
                                         <option value="Head Office">Ananta Companies Head Office</option>
                                         <option value="ABM">ABM Fashions Limited</option>
                                         <option value="AJL">Ananta Jeanswear Limited</option>
+                                        <option value="PWPL">Paradise Washing Plant Limited</option>
                                         <option value="AGL">Ananta Garments Limited</option>
                                     </select>
                                     <div class="mt-3">

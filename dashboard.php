@@ -1,88 +1,131 @@
 <?php 
 include('includes/checklogin.php');
 check_login();
+
+// ==== ADD: Fetch logged-in username ====
+$aid = $_SESSION['odmsaid'];
+$sql = "SELECT UserName FROM tbladmin WHERE ID = :aid";
+$query = $dbh->prepare($sql);
+$query->bindParam(':aid', $aid, PDO::PARAM_STR);
+$query->execute();
+$userResult = $query->fetch(PDO::FETCH_OBJ);
+$username = $userResult->UserName ?? '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <?php @include("includes/head.php");?>
 <body>
   <div class="container-scroller">
-    <!-- partial:partials/_navbar.html -->
     <?php @include("includes/header.php");?>
-    <!-- partial -->
     <div class="container-fluid page-body-wrapper">
-      <!-- partial:partials/_sidebar.html -->
       <?php @include("includes/sidebar.php");?>
-      <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-          <div class="row">
-            <div class="col-md-3 stretch-card grid-margin">
-              <div class="card bg-gradient-info card-img-holder text-black" style="height: 150px;">
-                <div class="card-body" >
-                  <!-- <img src="assets/images/dashboard/circle.svg" class="card-img-absolute" alt="circle-image" /> -->
-                  <h4 class="font-weight-normal mb-3">Today's  Visitors</h4>
-                  <?php
-                  //todays visitors
-                  $query=mysqli_query($con,"select ID from tblvisitor where date(EnterDate)=CURDATE();");
-                  $count_today_visitors=mysqli_num_rows($query);
-                  ?> 
-                  <h2 class="mb-5"><?php echo $count_today_visitors;?></h2>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3 stretch-card grid-margin">
-              <div class="card bg-gradient-info card-img-holder text-black" style="height: 150px;">
-                <div class="card-body">
-                  <h4 class="font-weight-normal mb-3">Yesterday   Visitors</h4>
-                  <?php
-                  //Yesterdays visitors
-                  $query1=mysqli_query($con,"select ID from tblvisitor where date(EnterDate)=CURDATE()-1;");
-                  $count_yesterday_visitors=mysqli_num_rows($query1);
-                  ?>       
-                  <h2 class="mb-5"><?php echo $count_yesterday_visitors?></h2>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3 stretch-card grid-margin">
-              <div class="card bg-gradient-info card-img-holder text-black" style="height: 150px;">
-                <div class="card-body">
-                  <h4 class="font-weight-normal mb-3">Last 7 Days Visitors </h4>
-                  <?php
-                  //Last Sevendays visitors
-                  $query2=mysqli_query($con,"select ID from tblvisitor where date(EnterDate)>=(DATE(NOW()) - INTERVAL 7 DAY);");
-                  $count_lastsevendays_visitors=mysqli_num_rows($query2);
-                  ?>              
-                  <h2 class="mb-5"><?php echo $count_lastsevendays_visitors?></h2>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-3 stretch-card grid-margin">
-              <div class="card bg-gradient-info card-img-holder text-black" style="height: 150px;">
-                <div class="card-body">
-                  <h4 class="font-weight-normal mb-3">Total Visitors  Till Date</h4>
-                  <?php
-                  //Total Visitors visitors
-                  $query3=mysqli_query($con,"select ID from tblvisitor");
-                  $count_total_visitors=mysqli_num_rows($query3);
-                  ?>     
-                  <h2 class="mb-5"><?php echo $count_total_visitors?></h2>
-                </div>
-              </div>
-            </div>
+          <style>
+            
+            .card {
+              height: 120px !important;
+            }
+            .card-body h4 {
+              font-size: 15px;
+              margin-bottom: 6px;
+            }
+            .card-body h2 {
+              font-size: 22px;
+              margin-bottom: 0;
+            }
+            .row.flex-wrap {
+              flex-wrap: wrap;
+            }
+          </style>
+
+          <div class="row flex-wrap">
+            <h4 class="col-12 mb-2">Head Office Dashboard</h4>
+            <?php
+              $query=mysqli_query($con,"select ID from tblvisitor where date(EnterDate)=CURDATE();");
+              $count_today_visitors=mysqli_num_rows($query);
+              $query1=mysqli_query($con,"select ID from tblvisitor where date(EnterDate)=CURDATE()-1;");
+              $count_yesterday_visitors=mysqli_num_rows($query1);
+              $query2=mysqli_query($con,"select ID from tblvisitor where date(EnterDate)>=(DATE(NOW()) - INTERVAL 7 DAY);");
+              $count_lastsevendays_visitors=mysqli_num_rows($query2);
+              $query3=mysqli_query($con,"select ID from tblvisitor");
+              $count_total_visitors=mysqli_num_rows($query3);
+
+              $mainStats = [
+                "Today's Visitors" => $count_today_visitors,
+                "Yesterday Visitors" => $count_yesterday_visitors,
+                "Last 7 Days Visitors" => $count_lastsevendays_visitors,
+                "Total Visitors Till Date" => $count_total_visitors
+              ];
+
+              foreach ($mainStats as $title => $count) {
+                echo '<div class="col-md-3 stretch-card grid-margin">';
+                echo '  <div class="card bg-gradient-info card-img-holder text-black">';
+                echo '    <div class="card-body">';
+                echo "      <h4 class='font-weight-normal mb-2'>$title</h4>";
+                echo "      <h2 class='mb-0'>$count</h2>";
+                echo '    </div>';
+                echo '  </div>';
+                echo '</div>';
+              }
+            ?>
+
+            <?php
+            // Show other dashboards only if username is NOT 'moniya'
+            if ($username !== 'moniya') {
+              $tables = [
+                'tblvisitorabm' => 'ABM',
+                'tblvisitoragl' => 'AGL',
+                'tblvisitorajl' => 'AJL',
+                'tblvisitorpwpl' => 'PWPL' // ✅ NEW: PWPL dashboard
+              ];
+              foreach ($tables as $table => $label) {
+                echo "<h4 class=\"col-12 mt-4 mb-2\">$label Dashboard</h4>";
+
+                $query_today = mysqli_query($con,"select ID from $table where date(EnterDate)=CURDATE();");
+                $count_today = mysqli_num_rows($query_today);
+
+                $query_yesterday = mysqli_query($con,"select ID from $table where date(EnterDate)=CURDATE()-1;");
+                $count_yesterday = mysqli_num_rows($query_yesterday);
+
+                $query_last7 = mysqli_query($con,"select ID from $table where date(EnterDate)>=(DATE(NOW()) - INTERVAL 7 DAY);");
+                $count_last7 = mysqli_num_rows($query_last7);
+
+                $query_total = mysqli_query($con,"select ID from $table");
+                $count_total = mysqli_num_rows($query_total);
+
+                $labels = [
+                  "Today's $label Visitors" => $count_today,
+                  "Yesterday $label Visitors" => $count_yesterday,
+                  "Last 7 Days $label Visitors" => $count_last7,
+                  "Total $label Visitors" => $count_total
+                ];
+
+                foreach ($labels as $title => $count) {
+                  echo '<div class="col-md-3 stretch-card grid-margin">';
+                  echo '  <div class="card bg-gradient-info card-img-holder text-black">';
+                  echo '    <div class="card-body">';
+                  echo "      <h4 class='font-weight-normal mb-2'>$title</h4>";
+                  echo "      <h2 class='mb-0'>$count</h2>";
+                  echo '    </div>';
+                  echo '  </div>';
+                  echo '</div>';
+                }
+              }
+            }
+            ?>
           </div>
         </div>
-        <!-- content-wrapper ends -->
-        <!-- partial:partials/_footer.html -->
         <?php @include("includes/footer.php");?>
-        <!-- partial -->
       </div>
-      <!-- main-panel ends -->
     </div>
-    <!-- page-body-wrapper ends -->
   </div>
-  <!-- container-scroller -->
   <?php @include("includes/foot.php");?>
+  <script>
+  setTimeout(function() {
+    location.reload();
+  }, 10000); // 10000ms = 10 seconds
+</script>
   <script >
     $(function () {
     /* ChartJS

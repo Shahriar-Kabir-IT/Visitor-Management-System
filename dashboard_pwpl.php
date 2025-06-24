@@ -4,15 +4,15 @@ check_login();
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<?php @include("includes/headagl.php");?>
+<?php @include("includes/headpwpl.php");?>
 <body>
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
-    <?php @include("includes/headeragl.php");?>
+    <?php @include("includes/headerpwpl.php");?>
     <!-- partial -->
     <div class="container-fluid page-body-wrapper">
       <!-- partial:partials/_sidebar.html -->
-      <?php @include("includes/sidebaragl.php");?>
+      <?php @include("includes/sidebarpwpl.php");?>
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
@@ -24,7 +24,7 @@ check_login();
                   <h4 class="font-weight-normal mb-3">Today's  Visitors</h4>
                   <?php
                   //todays visitors
-                  $query=mysqli_query($con,"select ID from tblvisitoragl where date(EnterDate)=CURDATE();");
+                  $query=mysqli_query($con,"select ID from tblvisitorpwpl where date(EnterDate)=CURDATE();");
                   $count_today_visitors=mysqli_num_rows($query);
                   ?> 
                   <h2 class="mb-5"><?php echo $count_today_visitors;?></h2>
@@ -37,7 +37,7 @@ check_login();
                   <h4 class="font-weight-normal mb-3">Yesterday   Visitors</h4>
                   <?php
                   //Yesterdays visitors
-                  $query1=mysqli_query($con,"select ID from tblvisitoragl where date(EnterDate)=CURDATE()-1;");
+                  $query1=mysqli_query($con,"select ID from tblvisitorpwpl where date(EnterDate)=CURDATE()-1;");
                   $count_yesterday_visitors=mysqli_num_rows($query1);
                   ?>       
                   <h2 class="mb-5"><?php echo $count_yesterday_visitors?></h2>
@@ -50,7 +50,7 @@ check_login();
                   <h4 class="font-weight-normal mb-3">Last 7 Days Visitors </h4>
                   <?php
                   //Last Sevendays visitors
-                  $query2=mysqli_query($con,"select ID from tblvisitoragl where date(EnterDate)>=(DATE(NOW()) - INTERVAL 7 DAY);");
+                  $query2=mysqli_query($con,"select ID from tblvisitorpwpl where date(EnterDate)>=(DATE(NOW()) - INTERVAL 7 DAY);");
                   $count_lastsevendays_visitors=mysqli_num_rows($query2);
                   ?>              
                   <h2 class="mb-5"><?php echo $count_lastsevendays_visitors?></h2>
@@ -63,7 +63,7 @@ check_login();
                   <h4 class="font-weight-normal mb-3">Total Visitors  Till Date</h4>
                   <?php
                   //Total Visitors visitors
-                  $query3=mysqli_query($con,"select ID from tblvisitoragl");
+                  $query3=mysqli_query($con,"select ID from tblvisitorpwpl");
                   $count_total_visitors=mysqli_num_rows($query3);
                   ?>     
                   <h2 class="mb-5"><?php echo $count_total_visitors?></h2>

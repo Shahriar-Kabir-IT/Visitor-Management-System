@@ -6,7 +6,7 @@ if(isset($_POST['update']))
 {
   $eid=$_SESSION['editid'];
   $remark=$_POST['remark'];
-  $query=mysqli_query($con,"update tblvisitor set remark='$remark' where  ID='$eid'");
+  $query=mysqli_query($con,"update tblvisitorpwpl set remark='$remark' where  ID='$eid'");
   if ($query) {
     echo '<script>alert("Visitors Remark has been Updated.")</script>';
     echo "<script>window.location.href ='manage_visitor.php'</script>";
@@ -19,7 +19,7 @@ if(isset($_POST['update']))
 <div class="card-body">
   <?php
   $eid=$_POST['edit_id5'];
-  $sql="SELECT * from tblvisitor  where ID=:eid";
+  $sql="SELECT * from tblvisitorpwpl  where ID=:eid";
   $query = $dbh -> prepare($sql);
   $query-> bindParam(':eid', $eid, PDO::PARAM_STR);
   $query->execute();
@@ -37,7 +37,7 @@ if(isset($_POST['update']))
         <td><?php  echo $row->FullName;?></td>
       </tr>
       <tr>
-        <th>Visitor Pass Number</th>
+        <th>Visitor Pass</th>
         <td><?php  echo $row->Email;?></td>
       </tr>
       <tr>

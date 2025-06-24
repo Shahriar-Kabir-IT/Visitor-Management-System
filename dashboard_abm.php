@@ -83,6 +83,11 @@ check_login();
   </div>
   <!-- container-scroller -->
   <?php @include("includes/foot.php");?>
+   <script>
+  setTimeout(function() {
+    location.reload();
+  }, 10000); // 10000ms = 10 seconds
+</script>
   <script >
     $(function () {
     /* ChartJS

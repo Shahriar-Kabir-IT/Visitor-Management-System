@@ -28,6 +28,9 @@ function check_login()
             case "AJL":
                 $allowed_prefix = 'ajl';
                 break;
+                case "PWPL":
+                $allowed_prefix = 'pwpl';
+                break;
             case "AGL":
                 $allowed_prefix = 'agl';
                 break;

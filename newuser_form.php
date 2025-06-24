@@ -132,6 +132,7 @@ function valid() {
                     <option value="">Select Factory</option>
                     <option value="ABM">ABM</option>
                     <option value="AJL">AJL</option>
+                    <option value="PWPL">PWPL</option>
                     <option value="AGL">AGL</option>
                     <option value="Head Office">Head Office</option>
                 </select>

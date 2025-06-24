@@ -27,7 +27,7 @@ check_login();
                           </button>
                         </div>
                         <div class="modal-body" id="info_update5">
-                          <?php @include("view_visitor_details.php");?>
+                          <?php @include("view_visitor_detailsagl.php");?>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -115,7 +115,7 @@ check_login();
       $(document).on('click','.edit_data5',function(){
         var edit_id5=$(this).attr('id');
         $.ajax({
-          url:"view_visitor_details.php",
+          url:"view_visitor_detailsagl.php",
           type:"post",
           data:{edit_id5:edit_id5},
           success:function(data){

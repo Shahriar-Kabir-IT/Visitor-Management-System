@@ -4,12 +4,12 @@ check_login();
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<?php @include("includes/headabm.php");?>
+<?php @include("includes/headpwpl.php");?>
 <body>
   <div class="container-scroller">
-    <?php @include("includes/headerabm.php");?>
+    <?php @include("includes/headerpwpl.php");?>
     <div class="container-fluid page-body-wrapper">
-      <?php @include("includes/sidebarabm.php");?>
+      <?php @include("includes/sidebarpwpl.php");?>
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
@@ -27,7 +27,7 @@ check_login();
                           </button>
                         </div>
                         <div class="modal-body" id="info_update5">
-                          <?php @include("view_visitor_detailsabm.php");?>
+                          <?php @include("view_visitor_detailspwpl.php");?>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -59,7 +59,7 @@ check_login();
                         </thead>
                         <tbody>
                           <?php
-                          $sql = "SELECT * FROM tblvisitorabm WHERE FullName LIKE :sdata OR MobileNumber LIKE :sdata";
+                          $sql = "SELECT * FROM tblvisitorpwpl WHERE FullName LIKE :sdata OR MobileNumber LIKE :sdata";
                           $query = $dbh->prepare($sql);
                           $like = "%$sdata%";
                           $query->bindParam(':sdata', $like, PDO::PARAM_STR);
@@ -115,7 +115,7 @@ check_login();
       $(document).on('click','.edit_data5',function(){
         var edit_id5=$(this).attr('id');
         $.ajax({
-          url:"view_visitor_detailsabm.php",
+          url:"view_visitor_detailspwpl.php",
           type:"post",
           data:{edit_id5:edit_id5},
           success:function(data){
