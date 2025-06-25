@@ -67,7 +67,7 @@ if(isset($_POST['save']))
                   <div class="row ">
                     <div class="form-group col-md-6 ">
                       <label for="exampleInputPassword1">Contact Number</label>
-                      <input type="text" id="mobilenumber" name="mobilenumber" placeholder="Mobile Number" class="form-control" maxlength="10" required="">
+                      <input type="text" id="mobilenumber" name="mobilenumber" placeholder="Mobile Number" class="form-control" maxlength="11" required="">
                     </div>
                     <div class="form-group col-md-6">
                       <label for="exampleInputName1">Whom to Meet </label>
