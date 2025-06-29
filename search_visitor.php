@@ -16,7 +16,8 @@ check_login();
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <!-- ✅ Modal (same as before) -->
+
+                  <!-- ✅ Modal -->
                   <div id="editData5" class="modal fade">
                     <div class="modal-dialog modal-lg">
                       <div class="modal-content">
@@ -37,13 +38,26 @@ check_login();
                   </div>
                   <!-- ✅ End Modal -->
 
+                  <!-- ✅ Search Form 
+                  <form method="post" class="mb-4">
+                    <div class="form-row justify-content-end">
+                      <div class="col-auto">
+                        <input type="text" name="searchdata" class="form-control" placeholder="Search Name or Mobile..." required>
+                      </div>
+                      <div class="col-auto">
+                        <button type="submit" name="search" class="btn btn-primary">Search</button>
+                      </div>
+                    </div>
+                  </form> -->
+
                   <div class="table-responsive">
                     <?php
-                    if(isset($_POST['search']) && !empty($_POST['searchdata'])) {
+                    if (isset($_POST['search']) && !empty($_POST['searchdata'])) {
                       $sdata = trim($_POST['searchdata']);
-                      ?>
+                      $sdata_normalized = ltrim($sdata, '0'); // remove leading 0 from mobile number
+                    ?>
                       <h4 align="center">Result for "<?php echo htmlentities($sdata); ?>"</h4>
-                      <hr /> 
+                      <hr />
                       <table class="table table-bordered table-hover" id="dataTableHover">
                         <thead>
                           <tr>
@@ -59,10 +73,12 @@ check_login();
                         </thead>
                         <tbody>
                           <?php
-                          $sql = "SELECT * FROM tblvisitor WHERE FullName LIKE :sdata OR MobileNumber LIKE :sdata";
+                          $sql = "SELECT * FROM tblvisitor WHERE FullName LIKE :sdata OR MobileNumber LIKE :sphone";
                           $query = $dbh->prepare($sql);
-                          $like = "%$sdata%";
-                          $query->bindParam(':sdata', $like, PDO::PARAM_STR);
+                          $like_name = "%$sdata%";
+                          $like_phone = "%$sdata_normalized%";
+                          $query->bindParam(':sdata', $like_name, PDO::PARAM_STR);
+                          $query->bindParam(':sphone', $like_phone, PDO::PARAM_STR);
                           $query->execute();
                           $results = $query->fetchAll(PDO::FETCH_OBJ);
                           $cnt = 1;
@@ -81,7 +97,7 @@ check_login();
                                 <td class="text-center"><?php echo $entryTime; ?></td>
                                 <td class="text-center"><?php echo $exitTime; ?></td>
                                 <td class="text-center">
-                                  <a href="#" class="edit_data5" id="<?php echo ($row->ID); ?>" title="click to view">
+                                  <a href="#" class="edit_data5" id="<?php echo ($row->ID); ?>" title="Click to view">
                                     <i class="mdi mdi-eye" aria-hidden="true"></i>
                                   </a>
                                 </td>
@@ -95,10 +111,9 @@ check_login();
                           ?>
                         </tbody>
                       </table>
-                      <?php
-                    }
-                    ?>
+                    <?php } ?>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -110,15 +125,16 @@ check_login();
   </div>
   <?php @include("includes/foot.php");?>
 
+  <!-- ✅ JS for Modal View -->
   <script type="text/javascript">
     $(document).ready(function(){
       $(document).on('click','.edit_data5',function(){
-        var edit_id5=$(this).attr('id');
+        var edit_id5 = $(this).attr('id');
         $.ajax({
-          url:"view_visitor_details.php",
-          type:"post",
-          data:{edit_id5:edit_id5},
-          success:function(data){
+          url: "view_visitor_details.php",
+          type: "post",
+          data: { edit_id5: edit_id5 },
+          success: function(data){
             $("#info_update5").html(data);
             $("#editData5").modal('show');
           }

@@ -47,7 +47,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="manage_visitor.php">
+                    <a class="nav-link" href="manage_visitor_admin.php">
                         <span class="menu-title">Manage visitors</span>
                         <i class="mdi mdi-account-multiple menu-icon"></i>
                     </a>
