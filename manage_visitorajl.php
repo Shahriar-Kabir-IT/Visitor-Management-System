@@ -45,7 +45,7 @@ $total_pages = ceil($total_rows / $limit);
                         </button>
                       </div>
                       <div class="modal-body" id="info_update5">
-                        <?php @include("view_visitor_details.php");?>
+                        <?php @include("view_visitor_detailsajl.php");?>
                       </div>
                       <div class="modal-footer ">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

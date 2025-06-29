@@ -716,5 +716,3 @@ function showGraph2()
 </script>
 </body>
 </html>
-
-

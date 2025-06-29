@@ -20,42 +20,36 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
   $fdate = $_POST['fromdate'];
   $tdate = $_POST['todate'];
   $factory = $_POST['factory'];
+  $table_name = ($factory === 'headoffice') ? "tblvisitor" : "tblvisitor" . $factory;
 
   header('Content-Type: text/csv');
   header('Content-Disposition: attachment; filename="visitor_report_' . $fdate . '_to_' . $tdate . '_' . $factory . '.csv"');
 
   $output = fopen("php://output", "w");
-  fputcsv($output, ['Full Name', 'Mobile Number', 'Whom to Visit', 'Reason to Meet', 'Company Name & Address', 'Entry Date', 'Entry Time', 'Exit Time', 'Factory']);
+  fputcsv($output, ['Full Name', 'Mobile Number', 'Whom to Visit', 'Reason to Meet', 'Company Name & Address', 'Entry Date', 'Entry Time', 'Exit Time']);
 
-  $factories = ($factory === 'all') 
-      ? ['headoffice' => 'tblvisitor', 'abm' => 'tblvisitorabm', 'ajl' => 'tblvisitorajl', 'agl' => 'tblvisitoragl', 'pwpl' => 'tblvisitorpwpl']
-      : [$factory => ($factory === 'headoffice' ? 'tblvisitor' : 'tblvisitor' . $factory)];
+  $sql = "SELECT * FROM $table_name WHERE date(EnterDate) BETWEEN :fdate AND :tdate";
+  $query = $dbh->prepare($sql);
+  $query->bindParam(':fdate', $fdate, PDO::PARAM_STR);
+  $query->bindParam(':tdate', $tdate, PDO::PARAM_STR);
+  $query->execute();
+  $results = $query->fetchAll(PDO::FETCH_OBJ);
 
-  foreach ($factories as $facKey => $table_name) {
-    $sql = "SELECT * FROM $table_name WHERE date(EnterDate) BETWEEN :fdate AND :tdate";
-    $query = $dbh->prepare($sql);
-    $query->bindParam(':fdate', $fdate, PDO::PARAM_STR);
-    $query->bindParam(':tdate', $tdate, PDO::PARAM_STR);
-    $query->execute();
-    $results = $query->fetchAll(PDO::FETCH_OBJ);
+  foreach ($results as $row) {
+    $entryDate = date("d-m-Y", strtotime($row->EnterDate));
+    $entryTime = date("H:i:s", strtotime($row->EnterDate));
+    $exitTime = !empty($row->outtime) ? date("H:i:s", strtotime($row->outtime)) : '';
 
-    foreach ($results as $row) {
-      $entryDate = date("d-m-Y", strtotime($row->EnterDate));
-      $entryTime = date("H:i:s", strtotime($row->EnterDate));
-      $exitTime = !empty($row->outtime) ? date("H:i:s", strtotime($row->outtime)) : '';
-
-      fputcsv($output, [
-        $row->FullName,
-        $row->MobileNumber,
-        $row->WhomtoMeet,
-        $row->ReasontoMeet,
-        $row->Address,
-        $entryDate,
-        $entryTime,
-        $exitTime,
-        strtoupper($facKey)
-      ]);
-    }
+    fputcsv($output, [
+      $row->FullName,
+      $row->MobileNumber,
+      $row->WhomtoMeet,
+      $row->ReasontoMeet,
+      $row->Address,
+      $entryDate,
+      $entryTime,
+      $exitTime
+    ]);
   }
 
   fclose($output);
@@ -64,12 +58,12 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
 ?>
 <!DOCTYPE html>
 <html lang="en">
-<?php @include("includes/head.php"); ?>
+<?php @include("includes/headagl.php"); ?>
 <body>
   <div class="container-scroller">
-    <?php @include("includes/header.php"); ?>
+    <?php @include("includes/headeragl.php"); ?>
     <div class="container-fluid page-body-wrapper">
-      <?php @include("includes/sidebar.php"); ?>
+      <?php @include("includes/sidebaragl.php"); ?>
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
@@ -94,12 +88,7 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
                         <label>Select Factory</label>
                         <select name="factory" class="form-control" required>
                           <option value="">-- Select Factory --</option>
-                          <option value="all" <?php if(isset($_GET['factory']) && $_GET['factory']=='all') echo 'selected'; ?>>All Factories</option>
-                          <option value="headoffice" <?php if(isset($_GET['factory']) && $_GET['factory']=='headoffice') echo 'selected'; ?>>Head Office</option>
-                          <option value="abm" <?php if(isset($_GET['factory']) && $_GET['factory']=='abm') echo 'selected'; ?>>ABM</option>
-                          <option value="ajl" <?php if(isset($_GET['factory']) && $_GET['factory']=='ajl') echo 'selected'; ?>>AJL</option>
-                          <option value="agl" <?php if(isset($_GET['factory']) && $_GET['factory']=='agl') echo 'selected'; ?>>AGL</option>
-                          <option value="pwpl" <?php if(isset($_GET['factory']) && $_GET['factory']=='pwpl') echo 'selected'; ?>>PWPL</option>
+                          <option value="agl" <?php if(isset($_GET['factory']) && $_GET['factory']=='agl') echo 'selected'; ?>>AGL</option> -->
                         </select>
                       </div>
                     </div>
@@ -109,6 +98,7 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
                     <button type="submit" name="download_csv" class="btn btn-warning btn-sm mb-4 ml-2" formmethod="post" 
                       formaction="" 
                       onclick="
+                        // Before POST submit, add hidden inputs dynamically
                         var f = this.form;
                         if(!f.download_fromdate){
                           var fromdateInput = document.createElement('input');
@@ -141,16 +131,19 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <?php 
+                // Pagination logic
                 if (isset($_GET['search']) && !empty($_GET['fromdate']) && !empty($_GET['factory'])):
                   $fdate = $_GET['fromdate'];
                   $tdate = $_GET['todate'];
                   $factory = $_GET['factory'];
                   $table_name = ($factory === 'headoffice') ? "tblvisitor" : "tblvisitor" . $factory;
 
+                  // Pagination variables
                   $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
                   $limit = 12;
                   $offset = ($page - 1) * $limit;
 
+                  // Get total records count
                   $sql_count = "SELECT COUNT(*) FROM $table_name WHERE date(EnterDate) BETWEEN :fdate AND :tdate";
                   $query_count = $dbh->prepare($sql_count);
                   $query_count->bindParam(':fdate', $fdate, PDO::PARAM_STR);
@@ -159,6 +152,7 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
                   $total_rows = $query_count->fetchColumn();
                   $total_pages = ceil($total_rows / $limit);
 
+                  // Fetch data for current page
                   $sql = "SELECT * FROM $table_name WHERE date(EnterDate) BETWEEN :fdate AND :tdate ORDER BY ID DESC LIMIT :limit OFFSET :offset";
                   $query = $dbh->prepare($sql);
                   $query->bindParam(':fdate', $fdate, PDO::PARAM_STR);
@@ -212,6 +206,7 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
                     </tbody>
                   </table>
 
+                  <!-- Pagination Links -->
                   <?php if ($total_pages > 1): ?>
                   <nav>
                     <ul class="pagination justify-content-center">
@@ -238,4 +233,4 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
   </div>
   <?php @include("includes/foot.php"); ?>
 </body>
-</html>
+</html> 

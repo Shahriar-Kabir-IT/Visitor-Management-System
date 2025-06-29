@@ -9,7 +9,7 @@ if(isset($_POST['update']))
   $query=mysqli_query($con,"update tblvisitorpwpl set remark='$remark' where  ID='$eid'");
   if ($query) {
     echo '<script>alert("Visitors Remark has been Updated.")</script>';
-    echo "<script>window.location.href ='manage_visitor.php'</script>";
+    echo "<script>window.location.href ='manage_visitorpwpl.php'</script>";
   }
   else{
     echo '<script>alert("Something Went Wrong. Please try again")</script>';
