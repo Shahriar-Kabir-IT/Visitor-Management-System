@@ -9,7 +9,7 @@ if(isset($_POST['update']))
   $query=mysqli_query($con,"update tblvisitoragl set remark='$remark' where  ID='$eid'");
   if ($query) {
     echo '<script>alert("Visitors Remark has been Updated.")</script>';
-    echo "<script>window.location.href ='manage_visitor.php'</script>";
+    echo "<script>window.location.href ='manage_visitoragl.php'</script>";
   }
   else{
     echo '<script>alert("Something Went Wrong. Please try again")</script>';
@@ -37,7 +37,7 @@ if(isset($_POST['update']))
         <td><?php  echo $row->FullName;?></td>
       </tr>
       <tr>
-        <th>Email</th>
+        <th>Visitor Pass Number</th>
         <td><?php  echo $row->Email;?></td>
       </tr>
       <tr>
