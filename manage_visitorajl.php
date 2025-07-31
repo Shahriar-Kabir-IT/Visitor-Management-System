@@ -14,6 +14,16 @@ $query_count = $dbh->prepare($sql_count);
 $query_count->execute();
 $total_rows = $query_count->fetch(PDO::FETCH_OBJ)->total;
 $total_pages = ceil($total_rows / $limit);
+
+// Calculate page range for pagination
+$page_range = 5; // Number of pages to show at a time
+$current_range = ceil($page / $page_range);
+$start_page = ($current_range - 1) * $page_range + 1;
+$end_page = min($start_page + $page_range - 1, $total_pages);
+
+// Calculate next and previous jump pages
+$next_jump = min($page + $page_range, $total_pages);
+$prev_jump = max($page - $page_range, 1);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -114,17 +124,17 @@ $total_pages = ceil($total_rows / $limit);
                     <ul class="pagination justify-content-center">
                       <?php if($page > 1): ?>
                         <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
-                        <li class="page-item"><a class="page-link" href="?page=<?php echo $page - 1; ?>">&lt; Prev</a></li>
+                        <li class="page-item"><a class="page-link" href="?page=<?php echo $prev_jump; ?>">&lt; Prev </a></li>
                       <?php endif; ?>
 
-                      <?php for($p = 1; $p <= $total_pages; $p++): ?>
+                      <?php for($p = $start_page; $p <= $end_page; $p++): ?>
                         <li class="page-item <?php if($p == $page) echo 'active'; ?>">
                           <a class="page-link" href="?page=<?php echo $p; ?>"><?php echo $p; ?></a>
                         </li>
                       <?php endfor; ?>
 
                       <?php if($page < $total_pages): ?>
-                        <li class="page-item"><a class="page-link" href="?page=<?php echo $page + 1; ?>">Next &gt;</a></li>
+                        <li class="page-item"><a class="page-link" href="?page=<?php echo $next_jump; ?>">Next &gt;</a></li>
                         <li class="page-item"><a class="page-link" href="?page=<?php echo $total_pages; ?>">Last &raquo;</a></li>
                       <?php endif; ?>
                     </ul>
