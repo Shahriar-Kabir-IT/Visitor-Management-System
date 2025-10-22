@@ -21,7 +21,7 @@
             $username = $result->UserName;
             $adminName = $result->AdminName;
 
-            if ($username === "alif" || $username === "reaz") {
+            if ($username === "secretariat" || $username === "reaz") {
                 // Show only Reports for alif
                 ?>
                 <li class="nav-item">

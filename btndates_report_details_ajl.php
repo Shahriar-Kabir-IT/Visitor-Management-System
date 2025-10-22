@@ -2,6 +2,10 @@
 session_start();
 error_reporting(0);
 include('includes/dbconnection.php');
+
+// Set timezone to Dhaka
+date_default_timezone_set('Asia/Dhaka');
+
 function check_login()
 {
 	if(strlen($_SESSION['odmsaid'])==0)
@@ -125,6 +129,13 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
                         }
                       "
                     >Download Data</button>
+                    
+                    <!-- Print Button -->
+                    <?php if (isset($_GET['search']) && !empty($_GET['fromdate']) && !empty($_GET['factory'])): ?>
+                    <button type="button" class="btn btn-info btn-sm mb-4 ml-2" onclick="printReport()">
+                      Print Report
+                    </button>
+                    <?php endif; ?>
                   </form>
                 </div>
               </div>
@@ -163,6 +174,18 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
                   $query->bindParam(':offset', $offset, PDO::PARAM_INT);
                   $query->execute();
                   $results = $query->fetchAll(PDO::FETCH_OBJ);
+                  
+                  // Get all data for print (without pagination)
+                  $sql_all = "SELECT * FROM $table_name WHERE date(EnterDate) BETWEEN :fdate AND :tdate ORDER BY ID DESC";
+                  $query_all = $dbh->prepare($sql_all);
+                  $query_all->bindParam(':fdate', $fdate, PDO::PARAM_STR);
+                  $query_all->bindParam(':tdate', $tdate, PDO::PARAM_STR);
+                  $query_all->execute();
+                  $all_results = $query_all->fetchAll(PDO::FETCH_OBJ);
+                  
+                  // Get current date and time for print (Dhaka timezone)
+                  $current_date = date('d-m-Y');
+                  $current_time = date('H:i:s');
                 ?>
                 <div class="table-responsive p-3">
                   <h5 align="center" style="color:blue">Report from <?php echo htmlentities($fdate); ?> to <?php echo htmlentities($tdate); ?> (<?php echo strtoupper(htmlentities($factory)); ?>)</h5>
@@ -223,6 +246,59 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
                   </nav>
                   <?php endif; ?>
                 </div>
+                
+                <!-- Hidden Print Section -->
+                <div id="printSection" style="display: none;">
+                  <div style="text-align: center; margin-bottom: 20px;">
+                    <h2>Visitor Report</h2>
+                    <h3>From: <?php echo htmlentities($fdate); ?> To: <?php echo htmlentities($tdate); ?></h3>
+                    <h4>Factory: <?php echo strtoupper(htmlentities($factory)); ?></h4>
+                    <p>Generated on: <?php echo $current_date . ' at ' . $current_time . ' (Dhaka Time)'; ?></p>
+                  </div>
+                  <table border="1" cellpadding="8" cellspacing="0" style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                    <thead>
+                      <tr style="background-color: #f8f9fa;">
+                        <th style="border: 1px solid #ddd; padding: 8px;">No</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Full Name</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Contact Number</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Whom to Visit</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Reason to Meet</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Company Address</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Entry Date</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Entry Time</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Exit Time</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php
+                      $print_cnt = 1;
+                      if (count($all_results) > 0) {
+                        foreach ($all_results as $row) {
+                      ?>
+                      <tr>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><?php echo $print_cnt; ?></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><?php echo htmlentities($row->FullName); ?></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><?php echo htmlentities($row->MobileNumber); ?></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><?php echo htmlentities($row->WhomtoMeet); ?></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><?php echo htmlentities($row->ReasontoMeet); ?></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><?php echo htmlentities($row->Address); ?></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><?php echo htmlentities(date("d-m-Y", strtotime($row->EnterDate))); ?></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><?php echo htmlentities(date("H:i:s", strtotime($row->EnterDate))); ?></td>
+                        <td style="border: 1px solid #ddd; padding: 8px;"><?php echo !empty($row->outtime) ? htmlentities(date("H:i:s", strtotime($row->outtime))) : '-'; ?></td>
+                      </tr>
+                      <?php
+                          $print_cnt++;
+                        }
+                      } else {
+                        echo '<tr><td colspan="9" style="border: 1px solid #ddd; padding: 8px; text-align: center;">No records found</td></tr>';
+                      }
+                      ?>
+                    </tbody>
+                  </table>
+                  <div style="text-align: center; margin-top: 20px; font-size: 12px;">
+                    <p>Total Records: <?php echo count($all_results); ?></p>
+                  </div>
+                </div>
                 <?php endif; ?>
               </div>
             </div>
@@ -234,5 +310,17 @@ if (isset($_POST['download_csv']) && !empty($_POST['fromdate']) && !empty($_POST
     </div>
   </div>
   <?php @include("includes/foot.php"); ?>
+  
+  <script>
+  function printReport() {
+    var printContent = document.getElementById('printSection').innerHTML;
+    var originalContent = document.body.innerHTML;
+    
+    document.body.innerHTML = printContent;
+    window.print();
+    document.body.innerHTML = originalContent;
+    window.location.reload();
+  }
+  </script>
 </body>
-</html> 
+</html>
